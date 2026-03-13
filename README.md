@@ -27,10 +27,15 @@ db/
     └── 001_init.sql
 ```
 
-## Run
+## Run manual
 
 ```bash
 cargo run
+```
+
+## Run Docker Compose
+```bash
+docker compose up --build
 ```
 
 Default server address:
