@@ -56,7 +56,7 @@ http://127.0.0.1:8080
 Request:
 
 ```bash
-curl http://127.0.0.1:8080/
+curl --location 'http://localhost:8080'
 ```
 
 Example response:
@@ -72,7 +72,7 @@ Example response:
 Request:
 
 ```bash
-curl http://127.0.0.1:8080/users
+curl --location 'http://localhost:8080/users'
 ```
 
 Example response:
@@ -99,17 +99,17 @@ Example response:
 Request:
 
 ```bash
-curl http://127.0.0.1:8080/users/550e8400-e29b-41d4-a716-446655440000
+curl --location 'http://localhost:8080/users/9171e83d-a54f-406b-863a-2a0795330faa'
 ```
 
 Example response:
 
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440000",
-  "name": "Alice",
-  "email": "alice@example.com",
-  "created_at": "2026-03-13T10:00:00Z"
+    "id": "9171e83d-a54f-406b-863a-2a0795330faa",
+    "name": "John Smith",
+    "email": "john.smith@gmail.com",
+    "created_at": "2026-03-13T08:11:17.909096Z"
 }
 ```
 
@@ -118,22 +118,23 @@ Example response:
 Request:
 
 ```bash
-curl -X POST http://127.0.0.1:8080/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Charlie",
-    "email": "charlie@example.com"
-  }'
+curl --location 'http://localhost:8080/users' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "id": 1,
+    "name": "len",
+    "email": "len@gmail.com"
+}'
 ```
 
 Example response:
 
 ```json
 {
-  "id": "550e8400-e29b-41d4-a716-446655440002",
-  "name": "Charlie",
-  "email": "charlie@example.com",
-  "created_at": "2026-03-13T10:10:00Z"
+    "id": "99017acf-6c57-4dae-aba6-8945c1f461a7",
+    "name": "len",
+    "email": "len@gmail.com",
+    "created_at": "2026-03-13T08:16:41.540279Z"
 }
 ```
 
@@ -142,7 +143,7 @@ Example response:
 Request:
 
 ```bash
-curl -X DELETE http://127.0.0.1:8080/users/550e8400-e29b-41d4-a716-446655440000
+curl --location --request DELETE 'http://localhost:8080/users/9171e83d-a54f-406b-863a-2a0795330faa'
 ```
 
 Example response:

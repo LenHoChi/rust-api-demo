@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: demo-api-db
+    environment:
+      POSTGRES_DB: demo-rust-test
+      POSTGRES_USER: demo-rust-api
+      POSTGRES_PASSWORD: demo-rust-api
+    ports:
+      - "5440:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo-rust-api -d demo-rust-test"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: demo-api-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      RUST_LOG: info
+      APP_NAME: demo-api
+      DATABASE_URL: postgres://demo-rust-api:demo-rust-api@db:5432/demo-rust-test
+      JWT_SECRET: super_secret_key_change_in_production
+      JWT_EXPIRES_IN: "86400"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
