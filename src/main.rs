@@ -35,6 +35,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(pool.clone())
             .route("/", web::get().to(user_handler::hello))
+            // database testing
             .route("/users",      web::get().to(user_handler::get_users_db))
             .route("/users/{id}",      web::get().to(user_handler::get_user_db))
             .route("/users",      web::post().to(user_handler::create_user_db))
