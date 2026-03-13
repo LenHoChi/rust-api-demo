@@ -19,29 +19,29 @@ pub struct CreateUser {
     pub email: Option<String>,
 }
 
-// #[derive(Deserialize)]
-// pub struct RegisterInput {
-//     pub name: Option<String>,
-//     pub email: Option<String>,
-//     pub password: Option<String>,
-// }
+#[derive(Deserialize)]
+pub struct RegisterInput {
+    pub name: Option<String>,
+    pub email: Option<String>,
+    pub password: Option<String>,
+}
 
-// #[derive(Deserialize)]
-// pub struct LoginInput {
-//     pub email: Option<String>,
-//     pub password: Option<String>,
-// }
+#[derive(Deserialize)]
+pub struct LoginInput {
+    pub email: Option<String>,
+    pub password: Option<String>,
+}
 
-// #[derive(Deserialize)]
-// pub struct AuthResponse {
-//     pub token: String,
-//     pub user: UserPublic,
-// }
+#[derive(Deserialize)]
+pub struct AuthResponse {
+    pub token: String,
+    pub user: UserPublic,
+}
 
-// #[derive(Deserialize)]
-// pub struct UserPublic {
-//     pub id: Uuid,
-//     pub name: String,
-//     pub email: String,
-// }
+#[derive(Deserialize)]
+pub struct UserPublic {
+    pub id: Uuid,
+    pub name: String,
+    pub email: String,
+}
 
