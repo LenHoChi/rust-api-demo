@@ -25,6 +25,12 @@ src/
 db/
 └── migration/
     └── 001_init.sql
+
+tests/
+└── handlers_tests.rs
+
+Dockerfile
+docker-compose.yml
 ```
 
 ## Run manual
@@ -42,6 +48,20 @@ Default server address:
 
 ```text
 http://127.0.0.1:8080
+```
+
+## Run Tests
+
+Run all tests:
+
+```bash
+cargo test
+```
+
+Run one specific test file:
+
+```bash
+cargo test --test handlers_tests
 ```
 
 ## Endpoints
