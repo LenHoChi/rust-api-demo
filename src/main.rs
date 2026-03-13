@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
 
-    let pool = db::create_pool().await;
+    let pool = db::db::create_pool().await;
 
     sqlx::raw_sql(include_str!("../db/migration/001_init.sql"))
         .execute(&pool)
@@ -36,7 +36,10 @@ async fn main() -> std::io::Result<()> {
             .app_data(pool.clone())
             .route("/", web::get().to(user_handler::hello))
             .route("/users",      web::get().to(user_handler::get_users_db))
-            // local testing
+            .route("/users/{id}",      web::get().to(user_handler::get_user_db))
+            .route("/users",      web::post().to(user_handler::create_user_db))
+            .route("/users/{id}",      web::delete().to(user_handler::delete_user_db))
+            // local simple testing
             .route("/users_local",      web::get().to(user_handler::get_users))
             .route("/users_local/{id}", web::get().to(user_handler::get_user))
             .route("/users_local",      web::post().to(user_handler::create_user))

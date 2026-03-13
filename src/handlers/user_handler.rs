@@ -17,6 +17,34 @@ pub async fn get_users_db(pool: web::Data<PgPool>) -> Result<HttpResponse, AppEr
     Ok(HttpResponse::Ok().json(users))
 }
 
+pub async fn get_user_db(
+    pool: web::Data<PgPool>,
+    path: web::Path<Uuid>,
+) -> Result<HttpResponse, AppError> {
+    let user = UserService::get_by_id(pool.get_ref(), path.into_inner()).await?;
+    Ok(HttpResponse::Ok().json(user))
+}
+
+pub async fn create_user_db(
+    pool: web::Data<PgPool>,
+    body: web::Json<CreateUser>,
+) -> Result<HttpResponse, AppError> {
+    let user = UserService::create(
+        pool.get_ref(),
+        body.name.clone(),
+        body.email.clone(),
+    ).await?;
+    Ok(HttpResponse::Created().json(user))
+}
+
+pub async fn delete_user_db(
+    pool: web::Data<PgPool>,
+    path: web::Path<Uuid>,
+) -> Result<HttpResponse, AppError> {
+    let user = UserService::delete(pool.get_ref(), path.into_inner()).await?;
+    Ok(HttpResponse::NoContent().finish())
+}
+
 // simple testing
 
 pub async fn hello() -> HttpResponse {
