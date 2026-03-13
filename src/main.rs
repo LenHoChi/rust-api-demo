@@ -1,20 +1,27 @@
-// mod errors;
-// mod handlers;
-// mod models; 
-// -> if not exist lib.rs file ()
-
-use demo_rest_api::handlers;
-// use demo_rest_api::errors;
-// use demo_rest_api::models;
+mod db;
+mod errors;
+mod models;
+mod handlers;
+mod services;
+mod repositories;
 
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 use std::env;
 
+use handlers::user_handler;
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
+
+    let pool = db::create_pool().await;
+
+    sqlx::raw_sql(include_str!("../db/migration/001_init.sql"))
+        .execute(&pool)
+        .await
+        .expect("Migration failed");
 
     let host = env::var("HOST").unwrap_or_else(|_| "127.0.0.1".to_string());
     let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string());
@@ -22,12 +29,18 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("Server running at http://{}", addr);
 
-    HttpServer::new(|| {
+    let pool = web::Data::new(pool);
+
+    HttpServer::new(move || {
         App::new()
-            .route("/",              web::get().to(handlers::hello))
-            .route("/users",         web::get().to(handlers::get_users))
-            .route("/users/{id}",    web::get().to(handlers::get_user))
-            .route("/users",         web::post().to(handlers::create_user))
+            .app_data(pool.clone())
+            .route("/", web::get().to(user_handler::hello))
+            .route("/users",      web::get().to(user_handler::get_users_db))
+            // local testing
+            .route("/users_local",      web::get().to(user_handler::get_users))
+            .route("/users_local/{id}", web::get().to(user_handler::get_user))
+            .route("/users_local",      web::post().to(user_handler::create_user))
+            .route("/users_local/{id}", web::delete().to(user_handler::delete_user))
     })
     .bind(&addr)?
     .run()
