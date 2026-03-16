@@ -29,27 +29,6 @@ async fn main() -> std::io::Result<()> {
     let pool = web::Data::new(pool);
 
     HttpServer::new(move || {
-        /*
-        jwt = header.payload.signature
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjYjNmMDMxMi1jZjY5LTQ2OGMtYmMzNC1lODIwNDQ5YzViMmYiLCJleHAiOjE3NzM3MzY3Mzl9._motywePaikqx4V_CoXxWzqtDuaFeRtnNCnCevTbC8s",
-        ->
-        eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9
-        .
-        eyJzdWIiOiJjYjNmMDMxMi1jZjY5LTQ2OGMtYmMzNC1lODIwNDQ5YzViMmYiLCJleHAiOjE3NzM3MzY3Mzl9
-        .
-        _motywePaikqx4V_CoXxWzqtDuaFeRtnNCnCevTbC8s
-        P1 header
-        {
-        "typ": "JWT",
-        "alg": "HS256"
-        }
-        P2 payload
-        {
-        "sub": "cb3f0312-cf69-468c-bc34-e820449c5b2f", // user_id
-        "exp": 1773736739 // time exp
-        }
-        P3 signature is created by JWT_SECRET, to server check the token is edit or not
-         */
         let auth = HttpAuthentication::bearer(jwt_validator);
         App::new()
             .app_data(pool.clone())
