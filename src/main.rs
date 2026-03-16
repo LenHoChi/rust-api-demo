@@ -1,15 +1,12 @@
-mod db;
-mod errors;
-mod models;
-mod handlers;
-mod services;
-mod repositories;
-
 use actix_web::{web, App, HttpServer};
+use actix_web_httpauth::middleware::HttpAuthentication;
+use demo_api::{
+    db,
+    handlers::{auth_handler, user_handler},
+    middleware::jwt_validator,
+};
 use dotenv::dotenv;
 use std::env;
-
-use handlers::user_handler;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -32,8 +29,39 @@ async fn main() -> std::io::Result<()> {
     let pool = web::Data::new(pool);
 
     HttpServer::new(move || {
+        /*
+        jwt = header.payload.signature
+        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjYjNmMDMxMi1jZjY5LTQ2OGMtYmMzNC1lODIwNDQ5YzViMmYiLCJleHAiOjE3NzM3MzY3Mzl9._motywePaikqx4V_CoXxWzqtDuaFeRtnNCnCevTbC8s",
+        ->
+        eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9
+        .
+        eyJzdWIiOiJjYjNmMDMxMi1jZjY5LTQ2OGMtYmMzNC1lODIwNDQ5YzViMmYiLCJleHAiOjE3NzM3MzY3Mzl9
+        .
+        _motywePaikqx4V_CoXxWzqtDuaFeRtnNCnCevTbC8s
+        P1 header
+        {
+        "typ": "JWT",
+        "alg": "HS256"
+        }
+        P2 payload
+        {
+        "sub": "cb3f0312-cf69-468c-bc34-e820449c5b2f", // user_id
+        "exp": 1773736739 // time exp
+        }
+        P3 signature is created by JWT_SECRET, to server check the token is edit or not
+         */
+        let auth = HttpAuthentication::bearer(jwt_validator);
         App::new()
             .app_data(pool.clone())
+             // Public routes
+            .route("/auth/register", web::post().to(auth_handler::register))
+            .route("/auth/login",    web::post().to(auth_handler::login))
+            // Protected routes — need JWT
+            .service(
+                web::scope("/api")
+                    .wrap(auth)
+                    .route("/users/me", web::get().to(user_handler::get_me))
+            )
             .route("/", web::get().to(user_handler::hello))
             // database testing
             .route("/users",      web::get().to(user_handler::get_users_db))

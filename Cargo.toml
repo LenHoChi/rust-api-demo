@@ -16,10 +16,10 @@ sqlx = { version = "0.7", features = ["runtime-tokio", "postgres", "uuid", "chro
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 
-[dev-dependencies]
-actix-web = { version = "4", features = ["macros"] }
-
 # Auth
 jsonwebtoken = "9"
 bcrypt = "0.15"
 actix-web-httpauth = "0.8"
+
+[dev-dependencies]
+actix-web = { version = "4", features = ["macros"] }

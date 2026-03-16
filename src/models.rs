@@ -8,9 +8,8 @@ pub struct User {
     pub name: String,
     pub email: String,
     pub created_at: DateTime<Utc>,
-    // #[serder(skip_serializing)]
-    // pub password: String,
-    // pub created_at: DateTime<Utc>,
+    #[serde(skip_serializing)]
+    pub password: String,
 }
 
 #[derive(Deserialize)]
@@ -32,16 +31,21 @@ pub struct LoginInput {
     pub password: Option<String>,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct AuthResponse {
     pub token: String,
     pub user: UserPublic,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct UserPublic {
     pub id: Uuid,
     pub name: String,
     pub email: String,
 }
 
+impl From<User> for UserPublic {
+    fn from(u: User) -> Self {
+        UserPublic { id: u.id, name: u.name, email: u.email }
+    }
+}

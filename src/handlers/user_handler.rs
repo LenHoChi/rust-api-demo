@@ -1,12 +1,14 @@
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpMessage, HttpRequest, HttpResponse};
 use log::info;
 use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::errors::errors::AppError;
+use crate::auth::Claims;
 use crate::models::CreateUser;
 use crate::models::User;
 use crate::services::user_service::UserService;
+use crate::models::UserPublic;
 
 pub async fn get_users_db(pool: web::Data<PgPool>) -> Result<HttpResponse, AppError> {
     // let users = UserService::get_all(pool.get_ref()).await?;
@@ -45,6 +47,28 @@ pub async fn delete_user_db(
     Ok(HttpResponse::NoContent().finish())
 }
 
+// GET /users/me
+pub async fn get_me(
+    pool: web::Data<PgPool>,
+    req: HttpRequest,
+) -> Result<HttpResponse, AppError> {
+    let claims = req.extensions().get::<Claims>()
+        .cloned()
+        .ok_or(AppError::Unauthorized("Missing claims".into()))?;
+
+    let id = Uuid::parse_str(&claims.sub)
+        .map_err(|_| AppError::InternalError)?;
+
+    let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id = $1")
+        .bind(id)
+        .fetch_optional(pool.get_ref())
+        .await
+        .map_err(|_| AppError::InternalError)?
+        .ok_or_else(|| AppError::NotFound("User not found".into()))?;
+
+    Ok(HttpResponse::Ok().json(UserPublic::from(user)))
+}
+
 // simple testing
 
 pub async fn hello() -> HttpResponse {
@@ -58,12 +82,14 @@ pub async fn get_users() -> HttpResponse {
             id: uuid::Uuid::new_v4(),
             name: "Alice".to_string(),
             email: "alice@example.com".to_string(),
+            password: "temp".to_string(),
             created_at: chrono::Utc::now(),
         },
         User {
             id: uuid::Uuid::new_v4(),
             name: "Bob".to_string(),
             email: "bob@example.com".to_string(),
+            password: "temp".to_string(),
             created_at: chrono::Utc::now(),
         },
     ];
@@ -89,6 +115,7 @@ pub async fn get_user(path: web::Path<String>) -> Result<HttpResponse, AppError>
         id: uuid::Uuid::new_v4(),
         name: format!("User {}", id),
         email: format!("user{}@example.com", id),
+        password: "temp".to_string(),
         created_at: chrono::Utc::now(),
     };
     Ok(HttpResponse::Ok().json(user))
@@ -112,10 +139,13 @@ pub async fn create_user(body: web::Json<CreateUser>) -> Result<HttpResponse, Ap
 
     let created_at = chrono::Utc::now();
 
+    let password = "temp".to_string();
+
     let new_user = User {
         id: uuid::Uuid::new_v4(),
         name,
         email,
+        password,
         created_at,
     };
     Ok(HttpResponse::Created().json(new_user))
