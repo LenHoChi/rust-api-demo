@@ -1,7 +1,7 @@
 use actix_web::{dev::ServiceRequest, Error, HttpMessage};
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 
-use crate::auth::verify_token;
+use crate::auth::jwt::verify_token;
 
 pub async fn jwt_validator(
     req: ServiceRequest,

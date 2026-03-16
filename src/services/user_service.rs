@@ -2,7 +2,8 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::errors::errors::AppError;
-use crate::models::{CreateUser, User};
+// use crate::models::{CreateUser, User};
+use crate::models::user::{CreateUser, User};
 use crate::repositories::user_repository::UserRepository;
 
 pub struct UserService;

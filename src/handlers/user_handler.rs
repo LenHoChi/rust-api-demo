@@ -4,11 +4,11 @@ use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::errors::errors::AppError;
-use crate::auth::Claims;
-use crate::models::CreateUser;
-use crate::models::User;
+use crate::auth::jwt::Claims;
+use crate::models::user::CreateUser;
 use crate::services::user_service::UserService;
-use crate::models::UserPublic;
+use crate::models::auth::UserPublic;
+use crate::models::user::User;
 
 pub async fn get_users_db(pool: web::Data<PgPool>) -> Result<HttpResponse, AppError> {
     // let users = UserService::get_all(pool.get_ref()).await?;

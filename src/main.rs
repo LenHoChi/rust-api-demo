@@ -3,7 +3,7 @@ use actix_web_httpauth::middleware::HttpAuthentication;
 use demo_api::{
     db,
     handlers::{auth_handler, user_handler},
-    middleware::jwt_validator,
+    auth::middleware::jwt_validator,
 };
 use dotenv::dotenv;
 use std::env;

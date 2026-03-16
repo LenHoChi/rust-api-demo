@@ -2,7 +2,7 @@ use actix_web::{web, HttpResponse};
 use bcrypt::{hash, verify, DEFAULT_COST};
 use sqlx::PgPool;
 
-use crate::{auth::create_token, errors::errors::AppError, models::*};
+use crate::{auth::jwt::create_token, errors::errors::AppError, models::auth::*, models::user::*};
 
 pub async fn register(
     pool: web::Data<PgPool>,
