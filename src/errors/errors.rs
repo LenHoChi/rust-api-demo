@@ -10,6 +10,12 @@ pub enum AppError {
     #[error("Bad request: {0}")]
     BadRequest(String),
 
+    #[error("Unauthorized: {0}")]
+    Unauthorized(String),
+
+    #[error("Conflict: {0}")]
+    Conflict(String),
+
     #[error("Internal server error")]
     InternalError,
 }
@@ -25,6 +31,8 @@ impl ResponseError for AppError {
         let (status, error_type) = match self {
             AppError::NotFound(_)     => (actix_web::http::StatusCode::NOT_FOUND, "NOT_FOUND"),
             AppError::BadRequest(_)   => (actix_web::http::StatusCode::BAD_REQUEST, "BAD_REQUEST"),
+            AppError::Unauthorized(_)=> (actix_web::http::StatusCode::UNAUTHORIZED, "UNAUTHORIZED"),
+            AppError::Conflict(_)    => (actix_web::http::StatusCode::CONFLICT, "CONFLICT"),
             AppError::InternalError   => (actix_web::http::StatusCode::INTERNAL_SERVER_ERROR, "INTERNAL_ERROR"),
         };
 
